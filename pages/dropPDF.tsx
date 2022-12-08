@@ -1,7 +1,8 @@
 import React from "react";
 import DragnDrop from "../components/DragnDrop";
-const index = () => {
+
+const dropImage = () => {
   return <DragnDrop />;
 };
 
-export default index;
+export default dropImage;
