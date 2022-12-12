@@ -5,7 +5,7 @@ const DropPDF = () => {
   return (
     <DragnDrop
       src={"/assets/pdf.png"}
-      minFileSize={100}
+      minFileSize={10}
       maxFileSize={5000}
       text="drop your PDF here."
       rules="accept PDF.

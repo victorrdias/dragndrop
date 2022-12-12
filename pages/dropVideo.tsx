@@ -7,7 +7,7 @@ const DropVideo = () => {
       text="drop your VIDEOS here."
       src={"/assets/video.png"}
       minFileSize={2000}
-      maxFileSize={50000}
+      maxFileSize={1550000}
       rules="accept video.
       maxSize 50mb"
       title="TITULO"

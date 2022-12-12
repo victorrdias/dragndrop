@@ -13,9 +13,8 @@ import {
   doc,
 } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "@firebase/storage";
-import { promises } from "stream";
-import { PollingWatchKind } from "typescript";
 import { DragnDropProps } from "../utils/interface/DragnDropProps";
+import { GiConfirmed } from "react-icons/gi";
 
 export const DragnDrop: React.FC<DragnDropProps> = ({
   src,
@@ -36,13 +35,9 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
     setIsDropActive(dragActive);
   }, []);
 
-  const { open, acceptedFiles } = useDropzone({
+  const { open } = useDropzone({
     noClick: true,
     noKeyboard: true,
-    accept: {
-      "image/jpeg": [],
-      "image/png": [],
-    },
   });
 
   const onDrop = (prevState: File[]) => {
@@ -83,7 +78,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
 
     if (newFilesSize < MIN_FILE_SIZE || newFilesSize > MAX_FILE_SIZE)
       setIsSuccess(false),
-        setErrorMsg("O tamanho do arquivo nao condiz com os requerimentos");
+        setErrorMsg("O arquivo nao condiz com os requerimentos");
     else setIsSuccess(true), onDrop(prevState);
   };
 
@@ -129,35 +124,49 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
       p="12"
     >
       <input type="text" ref={captionRef} />
+
       <Text>{title}</Text>
       <Text>{subTitle}</Text>
       <DropZone onFilesDrop={(files) => validateSelectedFileSize(files, files)}>
-        <Flex
-          borderRadius="15px"
-          align="center"
-          justify="center"
-          w="30vw"
-          h="30vh"
-          bgColor="gray.200"
-          border="dashed"
-          borderColor="red"
-        >
-          <Image
-            boxSize="16rem"
-            opacity={0.2}
-            position="absolute"
-            src={src}
-            aria-label="corresponding type files icon"
-          />
-          <Text fontSize="30" fontWeight="bold">
-            {text}
-          </Text>
-        </Flex>
+        <Button onClick={open} h="100%" p="0" borderRadius="15px">
+          <Flex
+            borderRadius="15px"
+            align="center"
+            justify="center"
+            w="30vw"
+            h="30vh"
+            bgColor="gray.200"
+            border="dashed"
+            borderColor={
+              isSuccess === false && files.length > 0 ? "red" : "gray"
+            }
+          >
+            <Image
+              boxSize="16rem"
+              opacity={0.2}
+              position="absolute"
+              src={src}
+              aria-label="corresponding type files icon"
+            />
+            <Text fontSize="30" fontWeight="bold">
+              {text}
+            </Text>
+          </Flex>
+        </Button>
       </DropZone>
+      {isSuccess && files.length > 0 ? (
+        <Icon color="green" boxSize="6" mt="1.5">
+          {<GiConfirmed />}
+        </Icon>
+      ) : null}
+      <Text color="red" fontWeight="semibold" className="error-message">
+        {errorMsg}
+      </Text>
       <Text>- {rules}</Text>
       {/* <Button onClick={open}>Search</Button> */}
-
-      <FileList files={files} />
+      <Flex direction="row" align="center" gap="2" h="100%">
+        <FileList files={files} />
+      </Flex>
       <Flex>
         {files.length === 0 ? (
           <h3>- No files to upload</h3>
@@ -165,10 +174,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
           <h3>Files to upload: {files.length}</h3>
         )}
       </Flex>
-      {isSuccess && files.length > 0 ? (
-        <p className="success-message">Validation successful</p>
-      ) : null}
-      <p className="error-message">{errorMsg}</p>
+
       <Button onClick={() => uploadFiles()}>Upload</Button>
     </Flex>
   );
