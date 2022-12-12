@@ -1,8 +1,19 @@
 import React from "react";
 import DragnDrop from "../components/DragnDrop";
 
-const dropImage = () => {
-  return <DragnDrop />;
+const DropVideo = () => {
+  return (
+    <DragnDrop
+      text="drop your VIDEOS here."
+      src={"/assets/video.png"}
+      minFileSize={2000}
+      maxFileSize={50000}
+      rules="accept video.
+      maxSize 50mb"
+      title="TITULO"
+      subTitle="subtitulo"
+    />
+  );
 };
 
-export default dropImage;
+export default DropVideo;

@@ -1,7 +1,17 @@
 import React from "react";
-import DragnDrop from "../components/DragnDrop";
-const index = () => {
-  return <DragnDrop />;
+
+import DropImage from "./DropImage";
+import DropPDF from "./dropPDF";
+import DropVideo from "./dropVideo";
+
+const index: React.FC = () => {
+  return (
+    <>
+      <DropImage />
+      <DropPDF />
+      <DropVideo />
+    </>
+  );
 };
 
 export default index;

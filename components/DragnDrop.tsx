@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { DropZone } from "../components/DropZone";
 import { FileList, FileListProps } from "../components/FileList";
-import { Flex, Button, Text } from "@chakra-ui/react";
+import { Flex, Button, Text, Image, Icon, IconButton } from "@chakra-ui/react";
 import { useDropzone } from "react-dropzone";
 import { db, storage } from "../firebase";
 import {
@@ -14,8 +14,18 @@ import {
 } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "@firebase/storage";
 import { promises } from "stream";
+import { PollingWatchKind } from "typescript";
+import { DragnDropProps } from "../utils/interface/DragnDropProps";
 
-export const DragnDrop = () => {
+export const DragnDrop: React.FC<DragnDropProps> = ({
+  src,
+  minFileSize,
+  maxFileSize,
+  text,
+  rules,
+  title,
+  subTitle,
+}) => {
   const [isDropActive, setIsDropActive] = React.useState(false);
   const [files, setFiles] = React.useState<File[]>([]);
   const [errorMsg, setErrorMsg] = React.useState<any | undefined>(false);
@@ -26,9 +36,13 @@ export const DragnDrop = () => {
     setIsDropActive(dragActive);
   }, []);
 
-  const { open } = useDropzone({
+  const { open, acceptedFiles } = useDropzone({
     noClick: true,
     noKeyboard: true,
+    accept: {
+      "image/jpeg": [],
+      "image/png": [],
+    },
   });
 
   const onDrop = (prevState: File[]) => {
@@ -47,6 +61,15 @@ export const DragnDrop = () => {
     setIsSuccess(false);
     setErrorMsg("");
 
+    const fileTypeArray = files.map((file) => file.type);
+
+    let fileType = "";
+    fileTypeArray.forEach((type) => {
+      fileType = fileType + type;
+    });
+
+    console.log("fileType", fileType);
+
     let newFilesSize: number = 0;
     filesSizeArray.forEach((size) => {
       newFilesSize = newFilesSize + size;
@@ -54,9 +77,9 @@ export const DragnDrop = () => {
 
     console.log(newFilesSize, "newfilesize");
 
-    const MIN_FILE_SIZE: number = 100;
+    const MIN_FILE_SIZE: number = minFileSize;
 
-    const MAX_FILE_SIZE: number = 5000;
+    const MAX_FILE_SIZE: number = maxFileSize;
 
     if (newFilesSize < MIN_FILE_SIZE || newFilesSize > MAX_FILE_SIZE)
       setIsSuccess(false),
@@ -98,12 +121,19 @@ export const DragnDrop = () => {
   };
 
   return (
-    <Flex direction="column" align="center" h="100vh" justify="center" gap="4">
-      <DropZone
-        onFilesDrop={(files) => validateSelectedFileSize(files, files)}
-        onDragStateChange={onDragStateChange}
-      >
+    <Flex
+      direction="column"
+      align="flex-start"
+      h="60vh"
+      justify="center"
+      p="12"
+    >
+      <input type="text" ref={captionRef} />
+      <Text>{title}</Text>
+      <Text>{subTitle}</Text>
+      <DropZone onFilesDrop={(files) => validateSelectedFileSize(files, files)}>
         <Flex
+          borderRadius="15px"
           align="center"
           justify="center"
           w="30vw"
@@ -112,15 +142,25 @@ export const DragnDrop = () => {
           border="dashed"
           borderColor="red"
         >
-          <Text>Drop your files here</Text>
+          <Image
+            boxSize="16rem"
+            opacity={0.2}
+            position="absolute"
+            src={src}
+            aria-label="corresponding type files icon"
+          />
+          <Text fontSize="30" fontWeight="bold">
+            {text}
+          </Text>
         </Flex>
       </DropZone>
-      <Button onClick={open}>Search</Button>
-      <input type="text" ref={captionRef} />
+      <Text>- {rules}</Text>
+      {/* <Button onClick={open}>Search</Button> */}
+
       <FileList files={files} />
       <Flex>
         {files.length === 0 ? (
-          <h3>No files to upload</h3>
+          <h3>- No files to upload</h3>
         ) : (
           <h3>Files to upload: {files.length}</h3>
         )}
