@@ -42,14 +42,16 @@ export const FileList = (props: React.PropsWithChildren<FileListProps>) => (
                 break;
             }
           })} */}
-          {file.type == "image/jpeg" ? (
+          {file.type == "image/jpeg" || file.type == "image/png" ? (
             <Icon h="100%" fontSize="1.3rem" mt="1" aria-label="asd">
               {<AiOutlineFileImage />}
             </Icon>
           ) : (
             ""
           )}
-          {file.type == "application/pdf" ? (
+          {file.type == "application/pdf" ||
+          file.type ==
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ? (
             <Icon fontSize="1.3rem" mt="1" aria-label="asd">
               {" "}
               {<AiOutlineFilePdf />}
@@ -57,7 +59,7 @@ export const FileList = (props: React.PropsWithChildren<FileListProps>) => (
           ) : (
             ""
           )}
-          {file.type == "video/mp4" && "video/mp3" ? (
+          {file.type == "video/mp4" || file.type == "video/mp3" ? (
             <Icon fontSize="1.3rem" mt="1" aria-label="asd">
               {<AiOutlineVideoCamera />}
             </Icon>

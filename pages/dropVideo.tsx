@@ -10,8 +10,8 @@ const DropVideo = () => {
       maxFileSize={1550000}
       rules="accept video.
       maxSize 50mb"
-      title="TITULO"
-      subTitle="subtitulo"
+      title="TITULO3"
+      subTitle="subtitulo3"
     />
   );
 };

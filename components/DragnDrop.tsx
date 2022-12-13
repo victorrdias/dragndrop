@@ -15,6 +15,7 @@ import {
 import { ref, getDownloadURL, uploadBytes } from "@firebase/storage";
 import { DragnDropProps } from "../utils/interface/DragnDropProps";
 import { GiConfirmed } from "react-icons/gi";
+import { isDragActive } from "framer-motion";
 
 export const DragnDrop: React.FC<DragnDropProps> = ({
   src,
@@ -26,7 +27,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
   subTitle,
 }) => {
   const [isDropActive, setIsDropActive] = React.useState(false);
-  const [files, setFiles] = React.useState<File[]>([]);
+  let [files, setFiles] = React.useState<File[]>([]);
   const [errorMsg, setErrorMsg] = React.useState<any | undefined>(false);
   const [isSuccess, setIsSuccess] = React.useState<any | undefined>(false);
   const captionRef = useRef<HTMLInputElement>(null);
@@ -104,17 +105,21 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
             });
           });
           setFiles([]);
-          setIsSuccess(false);
+          setIsSuccess(true);
           setErrorMsg("");
         })
       );
     }
     if (current) {
       captionRef.current.value = "";
-      setFiles([]);
     }
   };
-
+  {
+    isDropActive
+      ? (document.body.style.cursor = "grabbing") || document.body.blur()
+      : (document.body.style.cursor = "default");
+  }
+  console.log("isdropactive1", isDropActive);
   return (
     <Flex
       direction="column"
@@ -127,18 +132,21 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
 
       <Text>{title}</Text>
       <Text>{subTitle}</Text>
-      <DropZone onFilesDrop={(files) => validateSelectedFileSize(files, files)}>
+      <DropZone
+        onFilesDrop={(files) => validateSelectedFileSize(files, files)}
+        onDragStateChange={onDragStateChange}
+      >
         <Button onClick={open} h="100%" p="0" borderRadius="15px">
           <Flex
             borderRadius="15px"
             align="center"
             justify="center"
-            w="30vw"
+            w="20vw"
             h="30vh"
             bgColor="gray.200"
             border="dashed"
             borderColor={
-              isSuccess === false && files.length > 0 ? "red" : "gray"
+              isSuccess === false && files.length != 0 ? "red" : "gray"
             }
           >
             <Image

@@ -1,4 +1,7 @@
+import { Button } from "@chakra-ui/react";
+import { url } from "inspector";
 import React from "react";
+import { useDropzone } from "react-dropzone";
 
 // Define interface for component props/api:
 export interface DropZoneProps {
@@ -51,6 +54,7 @@ export const DropZone = React.memo(
       [onDragIn]
     );
 
+    //console.log(isDragActive, "isDragActive?");
     // Create handler for dragleave event:
     const handleDragOut = React.useCallback(
       (event) => {

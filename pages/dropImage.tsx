@@ -10,8 +10,8 @@ const DropImage: React.FC = () => {
       text="drop your IMAGES here."
       rules="accept img, png, jpeg.
       maxSize 5mb"
-      title="TITULO"
-      subTitle="subtitulo"
+      title="TITULO1"
+      subTitle="subtitulo1"
     />
   );
 };

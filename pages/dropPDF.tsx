@@ -10,8 +10,8 @@ const DropPDF = () => {
       text="drop your PDF here."
       rules="accept PDF.
       maxSize 5mb"
-      title="TITULO"
-      subTitle="subtitulo"
+      title="TITUL2O"
+      subTitle="subtitulo2"
     />
   );
 };
