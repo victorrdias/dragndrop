@@ -25,6 +25,8 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
   rules,
   title,
   subTitle,
+  acceptedType,
+  acceptedType2,
 }) => {
   const [isDropActive, setIsDropActive] = React.useState(false);
   let [files, setFiles] = React.useState<File[]>([]);
@@ -36,10 +38,16 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
     setIsDropActive(dragActive);
   }, []);
 
-  const { open } = useDropzone({
+  const { open, acceptedFiles } = useDropzone({
     noClick: true,
     noKeyboard: true,
   });
+
+  const lists = acceptedFiles.map((file) => (
+    <li key={file.type}>
+      {file.name} - {file.size} bytes
+    </li>
+  ));
 
   const onDrop = (prevState: File[]) => {
     files.push(...prevState);
@@ -77,7 +85,11 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
 
     const MAX_FILE_SIZE: number = maxFileSize;
 
-    if (newFilesSize < MIN_FILE_SIZE || newFilesSize > MAX_FILE_SIZE)
+    if (
+      newFilesSize < MIN_FILE_SIZE ||
+      newFilesSize > MAX_FILE_SIZE ||
+      (fileType !== acceptedType && fileType !== acceptedType2)
+    )
       setIsSuccess(false),
         setErrorMsg("O arquivo nao condiz com os requerimentos");
     else setIsSuccess(true), onDrop(prevState);
@@ -114,12 +126,11 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
       captionRef.current.value = "";
     }
   };
-  {
-    isDropActive
-      ? (document.body.style.cursor = "grabbing") || document.body.blur()
-      : (document.body.style.cursor = "default");
+
+  if (isDropActive === true) {
+    console.log("isdropactive1", isDropActive);
   }
-  console.log("isdropactive1", isDropActive);
+
   return (
     <Flex
       direction="column"
@@ -176,6 +187,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
         <FileList files={files} />
       </Flex>
       <Flex>
+        <p>{lists}</p>
         {files.length === 0 ? (
           <h3>- No files to upload</h3>
         ) : (

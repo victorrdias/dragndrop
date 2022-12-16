@@ -4,6 +4,8 @@ import DragnDrop from "../components/DragnDrop";
 const DropImage: React.FC = () => {
   return (
     <DragnDrop
+      acceptedType={"image/jpeg"}
+      acceptedType2={"image/webp"}
       src={"/assets/pic.png"}
       minFileSize={10}
       maxFileSize={3000}

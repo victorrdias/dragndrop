@@ -42,7 +42,9 @@ export const FileList = (props: React.PropsWithChildren<FileListProps>) => (
                 break;
             }
           })} */}
-          {file.type == "image/jpeg" || file.type == "image/png" ? (
+          {file.type == "image/jpeg" ||
+          file.type == "image/png" ||
+          file.type == "image/webp" ? (
             <Icon h="100%" fontSize="1.3rem" mt="1" aria-label="asd">
               {<AiOutlineFileImage />}
             </Icon>

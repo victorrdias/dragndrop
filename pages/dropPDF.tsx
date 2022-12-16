@@ -4,6 +4,10 @@ import DragnDrop from "../components/DragnDrop";
 const DropPDF = () => {
   return (
     <DragnDrop
+      acceptedType={"application/pdf"}
+      acceptedType2={
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      }
       src={"/assets/pdf.png"}
       minFileSize={10}
       maxFileSize={5000}
