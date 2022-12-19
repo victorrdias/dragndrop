@@ -38,16 +38,11 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
     setIsDropActive(dragActive);
   }, []);
 
-  const { open, acceptedFiles } = useDropzone({
-    noClick: true,
-    noKeyboard: true,
-  });
+  const { open, acceptedFiles } = useDropzone({});
 
-  const lists = acceptedFiles.map((file) => (
-    <li key={file.type}>
-      {file.name} - {file.size} bytes
-    </li>
-  ));
+  const onClickToDrop = acceptedFiles.map((fileOnClick) => {
+    files.push(fileOnClick);
+  });
 
   const onDrop = (prevState: File[]) => {
     files.push(...prevState);
@@ -157,7 +152,11 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
             bgColor="gray.200"
             border="dashed"
             borderColor={
-              isSuccess === false && files.length != 0 ? "red" : "gray"
+              isSuccess === false && files.length != 0
+                ? "red"
+                : "green" && isSuccess === true
+                ? "green"
+                : "gray"
             }
           >
             <Image
@@ -182,12 +181,12 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
         {errorMsg}
       </Text>
       <Text>- {rules}</Text>
-      {/* <Button onClick={open}>Search</Button> */}
+
       <Flex direction="row" align="center" gap="2" h="100%">
         <FileList files={files} />
       </Flex>
       <Flex>
-        <p>{lists}</p>
+        {/* <p>{lists}</p> */}
         {files.length === 0 ? (
           <h3>- No files to upload</h3>
         ) : (
