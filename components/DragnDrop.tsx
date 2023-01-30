@@ -16,6 +16,7 @@ import { ref, getDownloadURL, uploadBytes } from "@firebase/storage";
 import { DragnDropProps } from "../utils/interface/DragnDropProps";
 import { GiConfirmed } from "react-icons/gi";
 import { isDragActive } from "framer-motion";
+import { validateSelectedFile } from "./validateSelectedFile";
 
 export const DragnDrop: React.FC<DragnDropProps> = ({
   src,
@@ -25,13 +26,14 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
   rules,
   title,
   subTitle,
-  acceptedType,
-  acceptedType2,
+  acceptedTypes,
 }) => {
   const [isDropActive, setIsDropActive] = React.useState(false);
   let [files, setFiles] = React.useState<File[]>([]);
+  let [filesSave, setFilesSave] = React.useState<File[]>([]);
+  let [filesDrop, setFilesDrop] = React.useState<File[]>([]);
   const [errorMsg, setErrorMsg] = React.useState<any | undefined>(false);
-  const [isSuccess, setIsSuccess] = React.useState<any | undefined>(false);
+  const [isValid, setIsValid] = React.useState<any | undefined>(false);
   const captionRef = useRef<HTMLInputElement>(null);
 
   const onDragStateChange = React.useCallback((dragActive: boolean) => {
@@ -40,55 +42,69 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
 
   const { open, acceptedFiles } = useDropzone({});
 
-  const onClickToDrop = acceptedFiles.map((fileOnClick) => {
-    files.push(fileOnClick);
-  });
-
   const onDrop = (prevState: File[]) => {
     files.push(...prevState);
-    console.log(prevState, "prevState");
-
     setFiles([...files]);
   };
 
-  const validateSelectedFileSize = (prevState: File[], files: File[]) => {
-    const filesSizeArray: number[] = files.map((newFile: File) => {
-      const fileSize: number = newFile && Math.round(newFile.size / 1000);
-      return fileSize;
-    });
-
-    setIsSuccess(false);
+  const handleFileDrop = (
+    files: File[],
+    minFileSize: number,
+    maxFileSize: number,
+    acceptedTypes: string[]
+  ) => {
+    const { isValid, errorMsg } = validateSelectedFile(
+      files,
+      minFileSize,
+      maxFileSize,
+      acceptedTypes
+    );
+    if (!isValid) {
+      setIsValid(isValid);
+      setErrorMsg(errorMsg);
+      return;
+    }
+    onDrop(files);
+    setIsValid(isValid);
     setErrorMsg("");
-
-    const fileTypeArray = files.map((file) => file.type);
-
-    let fileType = "";
-    fileTypeArray.forEach((type) => {
-      fileType = fileType + type;
-    });
-
-    console.log("fileType", fileType);
-
-    let newFilesSize: number = 0;
-    filesSizeArray.forEach((size) => {
-      newFilesSize = newFilesSize + size;
-    });
-
-    console.log(newFilesSize, "newfilesize");
-
-    const MIN_FILE_SIZE: number = minFileSize;
-
-    const MAX_FILE_SIZE: number = maxFileSize;
-
-    if (
-      newFilesSize < MIN_FILE_SIZE ||
-      newFilesSize > MAX_FILE_SIZE ||
-      (fileType !== acceptedType && fileType !== acceptedType2)
-    )
-      setIsSuccess(false),
-        setErrorMsg("O arquivo nao condiz com os requerimentos");
-    else setIsSuccess(true), onDrop(prevState);
   };
+
+  const onSave = (acceptedFiles: File[]) => {
+    filesDrop.push(...acceptedFiles);
+    setFilesDrop([...filesDrop]);
+  };
+  const handleOnSave = (
+    files: File[],
+    minFileSize: number,
+    maxFileSize: number,
+    acceptedTypes: string[]
+  ) => {
+    const { isValid, errorMsg } = validateSelectedFile(
+      files,
+      minFileSize,
+      maxFileSize,
+      acceptedTypes
+    );
+    if (!isValid) {
+      setIsValid(isValid);
+      setErrorMsg(errorMsg);
+      return;
+    }
+    onSave(acceptedFiles);
+    files.push(...filesDrop);
+    setIsValid(isValid);
+    setErrorMsg("");
+  };
+
+  useEffect(() => {
+    handleOnSave(files, minFileSize, maxFileSize, acceptedTypes);
+    console.log(filesDrop, "filesDROP");
+  }, [acceptedFiles]);
+
+  useEffect(() => {
+    console.log("files", { files, acceptedFiles });
+    //console.log("accceptedFiles", acceptedFiles);
+  }, [files, acceptedFiles]);
 
   const uploadFiles = async () => {
     const current = captionRef.current;
@@ -112,7 +128,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
             });
           });
           setFiles([]);
-          setIsSuccess(true);
+          setIsValid(true);
           setErrorMsg("");
         })
       );
@@ -121,10 +137,6 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
       captionRef.current.value = "";
     }
   };
-
-  if (isDropActive === true) {
-    console.log("isdropactive1", isDropActive);
-  }
 
   return (
     <Flex
@@ -139,7 +151,9 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
       <Text>{title}</Text>
       <Text>{subTitle}</Text>
       <DropZone
-        onFilesDrop={(files) => validateSelectedFileSize(files, files)}
+        onFilesDrop={(files) =>
+          handleFileDrop(files, minFileSize, maxFileSize, acceptedTypes)
+        }
         onDragStateChange={onDragStateChange}
       >
         <Button onClick={open} h="100%" p="0" borderRadius="15px">
@@ -152,11 +166,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
             bgColor="gray.200"
             border="dashed"
             borderColor={
-              isSuccess === false && files.length != 0
-                ? "red"
-                : "green" && isSuccess === true
-                ? "green"
-                : "gray"
+              !isValid ? "red" : files.length == 0 && isValid ? "gray" : "green"
             }
           >
             <Image
@@ -172,7 +182,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
           </Flex>
         </Button>
       </DropZone>
-      {isSuccess && files.length > 0 ? (
+      {isValid && files.length > 0 ? (
         <Icon color="green" boxSize="6" mt="1.5">
           {<GiConfirmed />}
         </Icon>

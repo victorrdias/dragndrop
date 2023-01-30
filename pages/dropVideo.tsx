@@ -4,8 +4,7 @@ import DragnDrop from "../components/DragnDrop";
 const DropVideo = () => {
   return (
     <DragnDrop
-      acceptedType={"video/mp4"}
-      acceptedType2={"video/mp3"}
+      acceptedTypes={["video/mp4", "video/mp3"]}
       text="drop your VIDEOS here."
       src={"/assets/video.png"}
       minFileSize={2000}

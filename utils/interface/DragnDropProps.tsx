@@ -6,6 +6,5 @@ export interface DragnDropProps {
   rules: string;
   title: string;
   subTitle: string;
-  acceptedType: string;
-  acceptedType2: string;
+  acceptedTypes: string[];
 }
