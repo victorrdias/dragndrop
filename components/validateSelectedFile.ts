@@ -2,22 +2,22 @@
  * @todo validate duplicate filesDrop
  */
 export const validateSelectedFile = (
-  filesDrop: File[],
+  files: File[],
   minFileSize: number,
   maxFileSize: number,
   acceptedTypes: string[]
 ) => {
-  if (filesDrop.length == 0)
+  if (files.length == 0)
     return {
       isValid: true,
       errorMsg: "",
     };
-  const filesSizeArray: number[] = filesDrop.map((newFile: File) => {
+  const filesSizeArray: number[] = files.map((newFile: File) => {
     const fileSize: number = newFile && Math.round(newFile.size / 1000);
     return fileSize;
   });
 
-  const fileTypeArray = filesDrop.map((file) => file.type);
+  const fileTypeArray = files.map((file) => file.type);
 
   let fileType = "";
   fileTypeArray.forEach((type) => {

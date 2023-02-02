@@ -40,21 +40,21 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
     setIsDropActive(dragActive);
   }, []);
 
-  const { open, acceptedFiles } = useDropzone({});
+  const { open, acceptedFiles, getInputProps } = useDropzone({});
 
   const onDrop = (prevState: File[]) => {
-    files.push(...prevState);
-    setFiles([...files]);
+    filesDrop.push(...prevState);
+    setFilesDrop([...filesDrop]);
   };
 
   const handleFileDrop = (
-    files: File[],
+    filesDrop: File[],
     minFileSize: number,
     maxFileSize: number,
     acceptedTypes: string[]
   ) => {
     const { isValid, errorMsg } = validateSelectedFile(
-      files,
+      filesDrop,
       minFileSize,
       maxFileSize,
       acceptedTypes
@@ -64,23 +64,24 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
       setErrorMsg(errorMsg);
       return;
     }
-    onDrop(files);
+    onDrop(filesDrop);
+    files.push(...filesDrop);
     setIsValid(isValid);
     setErrorMsg("");
   };
 
   const onSave = (acceptedFiles: File[]) => {
-    filesDrop.push(...acceptedFiles);
-    setFilesDrop([...filesDrop]);
+    filesSave.push(...acceptedFiles);
+    setFilesSave([...filesSave]);
   };
   const handleOnSave = (
-    files: File[],
+    filesSave: File[],
     minFileSize: number,
     maxFileSize: number,
     acceptedTypes: string[]
   ) => {
     const { isValid, errorMsg } = validateSelectedFile(
-      files,
+      filesSave,
       minFileSize,
       maxFileSize,
       acceptedTypes
@@ -91,14 +92,14 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
       return;
     }
     onSave(acceptedFiles);
-    files.push(...filesDrop);
+    files.push(...filesSave);
     setIsValid(isValid);
     setErrorMsg("");
   };
 
   useEffect(() => {
-    handleOnSave(files, minFileSize, maxFileSize, acceptedTypes);
-    console.log(filesDrop, "filesDROP");
+    handleOnSave(filesSave, minFileSize, maxFileSize, acceptedTypes);
+    console.log("filesSave", filesSave);
   }, [acceptedFiles]);
 
   useEffect(() => {
@@ -151,8 +152,8 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
       <Text>{title}</Text>
       <Text>{subTitle}</Text>
       <DropZone
-        onFilesDrop={(files) =>
-          handleFileDrop(files, minFileSize, maxFileSize, acceptedTypes)
+        onFilesDrop={(filesDrop) =>
+          handleFileDrop(filesDrop, minFileSize, maxFileSize, acceptedTypes)
         }
         onDragStateChange={onDragStateChange}
       >
