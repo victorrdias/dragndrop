@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "@firebase/storage";
 import { DragnDropProps } from "../utils/interface/DragnDropProps";
-import { GiConfirmed } from "react-icons/gi";
+import { GiConfirmed, GiConsoleController } from "react-icons/gi";
 import { isDragActive } from "framer-motion";
 import { validateSelectedFile } from "./validateSelectedFile";
 
@@ -40,7 +40,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
     setIsDropActive(dragActive);
   }, []);
 
-  const { open, acceptedFiles, getInputProps } = useDropzone({});
+  const { open, acceptedFiles } = useDropzone({});
 
   const onDrop = (prevState: File[]) => {
     filesDrop.push(...prevState);
@@ -80,32 +80,37 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
     maxFileSize: number,
     acceptedTypes: string[]
   ) => {
-    const { isValid, errorMsg } = validateSelectedFile(
-      filesSave,
-      minFileSize,
-      maxFileSize,
-      acceptedTypes
-    );
-    if (!isValid) {
+    if (acceptedFiles.length > 0) {
+      const { isValid, errorMsg } = validateSelectedFile(
+        acceptedFiles,
+        minFileSize,
+        maxFileSize,
+        acceptedTypes
+      );
+      if (!isValid) {
+        setIsValid(isValid);
+        setErrorMsg(errorMsg);
+        return;
+      }
+      onSave(acceptedFiles);
+      files.push(...filesSave);
       setIsValid(isValid);
-      setErrorMsg(errorMsg);
-      return;
+      setErrorMsg("");
     }
-    onSave(acceptedFiles);
-    files.push(...filesSave);
-    setIsValid(isValid);
-    setErrorMsg("");
   };
 
   useEffect(() => {
     handleOnSave(filesSave, minFileSize, maxFileSize, acceptedTypes);
-    console.log("filesSave", filesSave);
+
+    console.log("acceptedFiles", acceptedFiles);
+    //console.log("filesSave", filesSave);
+    //console.log("files", files);
   }, [acceptedFiles]);
 
-  useEffect(() => {
-    console.log("files", { files, acceptedFiles });
-    //console.log("accceptedFiles", acceptedFiles);
-  }, [files, acceptedFiles]);
+  // useEffect(() => {
+  //   console.log("files", { files, acceptedFiles });
+  //   //console.log("accceptedFiles", acceptedFiles);
+  // }, [files, acceptedFiles]);
 
   const uploadFiles = async () => {
     const current = captionRef.current;
