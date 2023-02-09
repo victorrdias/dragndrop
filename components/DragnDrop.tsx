@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { DropZone } from "../components/DropZone";
 import { FileList, FileListProps } from "../components/FileList";
 import { Flex, Button, Text, Image, Icon, IconButton } from "@chakra-ui/react";
@@ -94,6 +94,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
       }
       onSave(acceptedFiles);
       files.push(...filesSave);
+      setFilesSave([]);
       setIsValid(isValid);
       setErrorMsg("");
     }
@@ -101,16 +102,7 @@ export const DragnDrop: React.FC<DragnDropProps> = ({
 
   useEffect(() => {
     handleOnSave(filesSave, minFileSize, maxFileSize, acceptedTypes);
-
-    console.log("acceptedFiles", acceptedFiles);
-    //console.log("filesSave", filesSave);
-    //console.log("files", files);
   }, [acceptedFiles]);
-
-  // useEffect(() => {
-  //   console.log("files", { files, acceptedFiles });
-  //   //console.log("accceptedFiles", acceptedFiles);
-  // }, [files, acceptedFiles]);
 
   const uploadFiles = async () => {
     const current = captionRef.current;
